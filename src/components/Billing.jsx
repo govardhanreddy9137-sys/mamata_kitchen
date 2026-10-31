@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useBilling } from '../context/BillingContext';
 import Receipt from './Receipt';
 import { playTapSound, playSuccessChime, playRemoveSound } from '../utils/audio';
@@ -25,7 +25,6 @@ const Billing = ({ currentUser, onNavigateToAdmin }) => {
     updateOrderQuantity,
     removeFromOrder,
     clearOrder,
-    getOrderTotal,
     getOrderSubtotal,
     getTotalPlates,
     completeOrder,
