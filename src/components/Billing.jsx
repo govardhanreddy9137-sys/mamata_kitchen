@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useBilling } from '../context/BillingContext';
 import Receipt from './Receipt';
 import { playTapSound, playSuccessChime, playRemoveSound } from '../utils/audio';
+import { printReceiptTicket } from '../utils/print';
 
 // Vibrant category color schemes
 const CATEGORY_COLORS = {
@@ -118,51 +119,10 @@ const Billing = ({ currentUser, onNavigateToAdmin }) => {
   };
 
   const handlePrintReceipt = () => {
-    const printContent = document.getElementById('receipt-print');
-    if (printContent) {
-      const isParcel = showReceipt?.orderType === 'parcel';
-      const themeColor = isParcel ? '#EA580C' : '#1D4ED8';
-      const themeBg = isParcel ? '#FFF7ED' : '#EFF6FF';
-
-      const printWindow = window.open('', '', 'width=440,height=700');
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Bill #${showReceipt.billNumber} (Token #${showReceipt.tokenNumber}) - Mamata Tiffin Center</title>
-            <style>
-              @page { size: 80mm auto; margin: 0; }
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
-                font-size: 13px;
-                color: #0f172a;
-                background: ${themeBg};
-                margin: 0;
-                padding: 10px;
-                width: 76mm;
-                box-sizing: border-box;
-              }
-              .text-center { text-align: center; }
-              .text-right { text-align: right; }
-              .font-bold { font-weight: bold; }
-              #receipt-print {
-                border: 2px dashed ${themeColor} !important;
-                padding: 10px;
-                border-radius: 12px;
-                background: #ffffff;
-              }
-            </style>
-          </head>
-          <body>${printContent.innerHTML}</body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 250);
-    }
+    printReceiptTicket(
+      'receipt-print',
+      `Bill #${showReceipt?.billNumber} (Token #${showReceipt?.tokenNumber}) - Mamata Tiffin Center`
+    );
   };
 
   const getItemCartCount = (itemId, isHalf = false) => {

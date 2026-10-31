@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { playTapSound } from '../utils/audio';
+import { useState, useEffect } from 'react';
+import { playTapSound, playRemoveSound } from '../utils/audio';
 
 const Receipt = ({ order, onClose, onPrint }) => {
   const { hotelInfo } = order;
@@ -7,6 +7,27 @@ const Receipt = ({ order, onClose, onPrint }) => {
   const [copied, setCopied] = useState(false);
 
   const tokenNumber = order.tokenNumber || ((order.billNumber - 1) % 100) + 1;
+
+  // Listen for Escape key to close the modal anytime
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        playRemoveSound();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  const handleClose = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    playRemoveSound();
+    onClose();
+  };
 
   // Theme configuration based on Order Type
   // Parcel -> ORANGE THEME
@@ -70,10 +91,21 @@ Thank you! Visit again!
   };
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-[#111827] rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-[#2B3E68]">
+    <div
+      onClick={(e) => {
+        // Close if clicked on the darkened backdrop
+        if (e.target === e.currentTarget) {
+          handleClose(e);
+        }
+      }}
+      className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200 cursor-pointer overflow-y-auto"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-[#111827] rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-[#2B3E68] cursor-default my-auto relative"
+      >
         {/* Modal Top Bar */}
-        <div className={`${theme.modalHeaderBg} px-6 py-4 flex items-center justify-between text-white shadow-md`}>
+        <div className={`${theme.modalHeaderBg} px-6 py-4 flex items-center justify-between text-white shadow-md relative z-20`}>
           <div className="flex items-center gap-2">
             <span className="text-2xl">{isParcel ? '📦' : '🍽️'}</span>
             <div>
@@ -85,9 +117,14 @@ Thank you! Visit again!
               </p>
             </div>
           </div>
+
+          {/* Cross Mark Button with robust touch target & Esc shortcut */}
           <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-black/25 hover:bg-black/40 flex items-center justify-center text-white text-base transition-colors cursor-pointer"
+            type="button"
+            onClick={handleClose}
+            className="w-10 h-10 rounded-full bg-black/30 hover:bg-black/60 active:scale-90 flex items-center justify-center text-white text-lg font-black transition-all cursor-pointer border border-white/25 shadow-md"
+            title="Close Receipt / ముగించు (Esc)"
+            aria-label="Close"
           >
             ✕
           </button>
@@ -230,23 +267,39 @@ Thank you! Visit again!
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="mt-4 flex gap-2">
-            <button
-              onClick={handleCopyBill}
-              className="py-2.5 px-3 rounded-xl bg-[#1F293D] hover:bg-[#28354E] text-slate-300 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-[#2D3F63]"
-              title="Copy bill text"
-            >
-              <span>{copied ? '✅' : '📋'}</span>
-              <span>{copied ? 'Copied' : 'Copy'}</span>
-            </button>
+          {/* Action Buttons: Copy, Print, and Done/Close */}
+          <div className="mt-4 space-y-2">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleCopyBill}
+                className="py-2.5 px-3 rounded-xl bg-[#1F293D] hover:bg-[#28354E] active:scale-95 text-slate-300 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-[#2D3F63]"
+                title="Copy bill text"
+              >
+                <span>{copied ? '✅' : '📋'}</span>
+                <span>{copied ? 'Copied' : 'Copy'}</span>
+              </button>
 
+              <button
+                type="button"
+                onClick={() => {
+                  playTapSound();
+                  onPrint();
+                }}
+                className={`flex-1 py-2.5 px-4 rounded-xl active:scale-95 text-xs font-black shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${theme.printBtnBg}`}
+              >
+                <span>🖨️</span>
+                <span>Print Slip / ప్రింట్ రసీదు</span>
+              </button>
+            </div>
+
+            {/* Dedicated Big Done / Next Order Button */}
             <button
-              onClick={onPrint}
-              className={`flex-1 py-2.5 px-4 rounded-xl active:scale-95 text-xs font-black shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${theme.printBtnBg}`}
+              type="button"
+              onClick={handleClose}
+              className="w-full py-2.5 px-4 rounded-xl bg-[#1A253A] hover:bg-[#23324E] active:scale-98 text-slate-200 border border-[#2E4268] text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
             >
-              <span>🖨️</span>
-              <span>Print Slip / ప్రింట్ రసీదు</span>
+              <span>✓ Done / Close & Next Order (ముగించు)</span>
             </button>
           </div>
         </div>

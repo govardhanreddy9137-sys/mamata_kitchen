@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useBilling } from '../context/BillingContext';
 import Receipt from './Receipt';
 import { playTapSound } from '../utils/audio';
+import { printReceiptTicket } from '../utils/print';
 
 const AdminDashboard = () => {
   const {
@@ -26,31 +27,10 @@ const AdminDashboard = () => {
       : salesHistory;
 
   const handlePrintReceipt = () => {
-    const printContent = document.getElementById('receipt-print');
-    if (printContent) {
-      const printWindow = window.open('', '', 'width=420,height=680');
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Bill #${reprintOrder.billNumber} - Mamata Tiffin Center</title>
-            <style>
-              body { font-family: monospace; font-size: 13px; padding: 10px; width: 76mm; }
-              .text-center { text-align: center; }
-              .text-right { text-align: right; }
-              .font-bold { font-weight: bold; }
-            </style>
-          </head>
-          <body>${printContent.innerHTML}</body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 250);
-    }
+    printReceiptTicket(
+      'receipt-print',
+      `Bill #${reprintOrder?.billNumber} (Token #${reprintOrder?.tokenNumber}) - Mamata Tiffin Center`
+    );
   };
 
   const copyToClipboard = (text, key) => {
