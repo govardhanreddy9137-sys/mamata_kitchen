@@ -13,9 +13,8 @@ const AdminDashboard = () => {
   } = useBilling();
 
   const [timeframe, setTimeframe] = useState('today'); // 'today' or 'all'
-  const [activeTab, setActiveTab] = useState('revenue'); // 'revenue', 'items', 'cashiers', 'history', 'github'
+  const [activeTab, setActiveTab] = useState('revenue'); // 'revenue', 'items', 'cashiers', 'history'
   const [reprintOrder, setReprintOrder] = useState(null);
-  const [copiedCmd, setCopiedCmd] = useState('');
 
   const stats = getSalesStats(timeframe);
 
@@ -33,13 +32,6 @@ const AdminDashboard = () => {
     );
   };
 
-  const copyToClipboard = (text, key) => {
-    playTapSound();
-    navigator.clipboard?.writeText(text);
-    setCopiedCmd(key);
-    setTimeout(() => setCopiedCmd(''), 2000);
-  };
-
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
@@ -54,7 +46,7 @@ const AdminDashboard = () => {
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time revenue, total plates served, cashier breakdowns, payment analytics, and GitHub status.
+            Real-time revenue, total plates served, cashier breakdowns, and payment analytics.
           </p>
         </div>
 
@@ -264,21 +256,6 @@ const AdminDashboard = () => {
           >
             <span>📜</span>
             <span>Billing Records ({filteredBills.length})</span>
-          </button>
-
-          <button
-            onClick={() => {
-              playTapSound();
-              setActiveTab('github');
-            }}
-            className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
-              activeTab === 'github'
-                ? 'border-cyan-400 text-cyan-400 font-black'
-                : 'border-transparent text-slate-400 hover:text-white'
-            }`}
-          >
-            <span>🐙</span>
-            <span>GitHub & Cloud / గిట్‌హబ్</span>
           </button>
         </div>
 
@@ -630,99 +607,6 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* TAB 5: GITHUB & CLOUD DEPLOYMENT */}
-          {activeTab === 'github' && (
-            <div className="space-y-6">
-              <div className="p-6 bg-[#090D17] rounded-2xl border border-cyan-500/30 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-2xl">
-                      🐙
-                    </div>
-                    <div>
-                      <h3 className="font-black text-white text-base">
-                        GitHub Repository & Cloud Sync
-                      </h3>
-                      <p className="text-xs text-slate-400">
-                        Git Repository initialized on <span className="text-cyan-400 font-mono">main</span> branch
-                      </p>
-                    </div>
-                  </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                    🟢 Git Initialized
-                  </span>
-                </div>
-
-                <div className="p-4 bg-[#121A2B] rounded-xl border border-[#202E4A] space-y-3">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-slate-300">Configured Git Remote URL:</span>
-                    <button
-                      onClick={() =>
-                        copyToClipboard(
-                          'https://github.com/govardhanreddy9137-sys/tiffin-billing-system.git',
-                          'remote'
-                        )
-                      }
-                      className="text-cyan-400 hover:underline font-mono"
-                    >
-                      {copiedCmd === 'remote' ? '✅ Copied!' : '📋 Copy URL'}
-                    </button>
-                  </div>
-                  <div className="p-2.5 bg-[#060A12] rounded-lg font-mono text-xs text-amber-300 border border-[#1A263D] break-all">
-                    https://github.com/govardhanreddy9137-sys/tiffin-billing-system.git
-                  </div>
-                </div>
-
-                <div className="space-y-3 pt-2">
-                  <h4 className="font-bold text-white text-xs uppercase tracking-wider text-slate-400">
-                    Quick Commands to Push to GitHub:
-                  </h4>
-
-                  <div className="space-y-2 font-mono text-xs">
-                    <div className="flex items-center justify-between p-2.5 bg-[#121A2B] rounded-xl border border-[#202E4A]">
-                      <span className="text-slate-200">
-                        git remote add origin https://github.com/govardhanreddy9137-sys/tiffin-billing-system.git
-                      </span>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(
-                            'git remote add origin https://github.com/govardhanreddy9137-sys/tiffin-billing-system.git',
-                            'cmd1'
-                          )
-                        }
-                        className="px-2.5 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 rounded-lg text-[11px] font-bold"
-                      >
-                        {copiedCmd === 'cmd1' ? 'Copied' : 'Copy'}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between p-2.5 bg-[#121A2B] rounded-xl border border-[#202E4A]">
-                      <span className="text-slate-200">
-                        git push -u origin main
-                      </span>
-                      <button
-                        onClick={() =>
-                          copyToClipboard('git push -u origin main', 'cmd2')
-                        }
-                        className="px-2.5 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 rounded-lg text-[11px] font-bold"
-                      >
-                        {copiedCmd === 'cmd2' ? 'Copied' : 'Copy'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-cyan-500/5 rounded-xl border border-cyan-500/20 text-xs text-slate-300 space-y-1.5">
-                  <div className="font-bold text-cyan-300">💡 Free 1-Click Hosting:</div>
-                  <p>
-                    Once pushed to GitHub, you can connect this repo to{' '}
-                    <strong className="text-white">Vercel</strong> or{' '}
-                    <strong className="text-white">Netlify</strong> for instant global HTTPS deployment so staff can access the billing system from any tablet, mobile, or counter PC!
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

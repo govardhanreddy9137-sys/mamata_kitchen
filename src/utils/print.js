@@ -81,3 +81,4 @@ export const printReceiptTicket = (elementId = 'receipt-print', title = 'Mamata 
     } catch {}
   }
 };
+
