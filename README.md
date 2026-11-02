@@ -52,10 +52,10 @@ A high-performance, luxury Point-of-Sale (POS) and thermal receipt billing appli
 
 ```bash
 # Clone the repository
-git clone https://github.com/govardhanreddy9137-sys/tiffin-billing-system.git
+git clone https://github.com/govardhanreddy9137-sys/mamata-tiffins.git
 
 # Navigate into project directory
-cd tiffin-billing-system
+cd mamata-tiffins
 
 # Install dependencies
 npm install
@@ -79,7 +79,7 @@ To push your local repository to GitHub:
 
 ```bash
 # Add GitHub Remote
-git remote add origin https://github.com/govardhanreddy9137-sys/tiffin-billing-system.git
+git remote add origin https://github.com/govardhanreddy9137-sys/mamata-tiffins.git
 
 # Rename branch to main (if not already)
 git branch -M main
